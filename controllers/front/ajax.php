@@ -24,8 +24,6 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
-use PrestaShop\PrestaShop\Adapter\Cart\CartPresenter;
-
 class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
