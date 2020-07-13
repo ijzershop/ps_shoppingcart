@@ -208,4 +208,20 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
             'PS_BLOCK_CART_AJAX' => (bool) Tools::getValue('PS_BLOCK_CART_AJAX', Configuration::get('PS_BLOCK_CART_AJAX')),
         );
     }
+
+
+    public function renderList(Cart $cart)
+    {
+        $data = (new CartPresenter)->present($cart, true);
+
+        $values = array(
+            'products' => $data['products'],
+            'cart' => $data,
+            'cart_url' => $this->getCartSummaryURL(),
+            'order_url' => $this->context->link->getPageLink('order'),
+        );
+        $this->smarty->assign($values);
+
+        return $this->fetch('themes/modernesmid/modules/ps_shoppingcart/ps_shoppingcart-list.tpl');
+    }
 }

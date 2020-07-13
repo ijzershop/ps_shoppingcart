@@ -24,6 +24,8 @@
 *  International Registered Trademark & Property of PrestaShop SA
 */
 
+use PrestaShop\PrestaShop\Adapter\Cart\CartPresenter;
+
 class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
@@ -44,7 +46,6 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
                 (int) Tools::getValue('id_product_attribute'),
                 (int) Tools::getValue('id_customization')
             );
-        }
 
         ob_end_clean();
         header('Content-Type: application/json');
@@ -52,5 +53,11 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
             'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
             'modal' => $modal,
         ]));
+        
+        } else {            
+            $modal = $this->module->renderList($this->context->cart);
+            die($modal);
+        }
+
     }
 }
