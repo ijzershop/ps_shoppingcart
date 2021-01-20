@@ -36,7 +36,6 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
         parent::initContent();
 
         $modal = null;
-
         if (Tools::getValue('action') === 'add-to-cart') {
             $modal = $this->module->renderModal(
                 $this->context->cart,
@@ -45,17 +44,71 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
                 (int) Tools::getValue('id_customization')
             );
 
-        ob_end_clean();
-        header('Content-Type: application/json');
-        die(json_encode([
-            'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
-            'modal' => $modal,
-        ]));
-        
-        } else {            
-            $modal = $this->module->renderList($this->context->cart);
-            die($modal);
+            ob_end_clean();
+            header('Content-Type: application/json');
+            die(json_encode([
+                'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
+                'modal' => $modal,
+            ]));
+        }
+        if (Tools::getValue('action') === 'set_carrier') {
+            $carrier = Tools::getValue('checked');
+            $id_cart = Context::getContext()->cookie->id_cart;
+            $cartObject = new Cart($id_cart);
+            $delivery_option_list = $cartObject->getDeliveryOptionList($this->context->country);
+
+            $shipping_config = unserialize(Configuration::get('koopmanOrderExport'));
+            $shippingCarrier = (int)$shipping_config['select_carrier'];
+            $pickupCarrier = (int)$shipping_config['select_pickup_carrier'];
+            try {
+                switch ($carrier) {
+                    case 'shipping':
+                        $this->context->cart->id_carrier = $shippingCarrier;
+                        foreach ($delivery_option_list as $id_address => $delivery_option) {
+                            foreach ($delivery_option as $delivery_option_key => $option) {
+                                if ((int)$delivery_option_key == $shippingCarrier) {
+                                    $delivery_option_value = [$id_address => $delivery_option_key];
+                                    $this->context->cart->setDeliveryOption($delivery_option_value);
+                                    $this->context->cart->save();
+                                }
+                            }
+                        }
+                        break;
+                    case 'pickup':
+                        $this->context->cart->id_carrier = $pickupCarrier;
+                        foreach ($delivery_option_list as $id_address => $delivery_option) {
+                            foreach ($delivery_option as $delivery_option_key => $option) {
+                                if ((int)$delivery_option_key == $pickupCarrier) {
+                                    $delivery_option_value = [$id_address => $delivery_option_key];
+                                    $this->context->cart->setDeliveryOption($delivery_option_value);
+                                    $this->context->cart->save();
+                                }
+                            }
+                        }
+                        break;
+                }
+            } catch (PrestaShopException $e) {
+                die(json_encode([
+                    'success' => false,
+                    'error' => $e->getMessage(),
+                    'modal' => $this->module->renderList($this->context->cart),
+                    'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
+                ]));
+            }
+
+            die(json_encode([
+                'cart' => $this->context->cart,
+                'total_shipping' => Context::getContext()->currentLocale->formatPrice((float)Context::getContext()->cart->getOrderTotal(false, Cart::ONLY_SHIPPING), 'EUR'),
+                'total_tax' => Context::getContext()->currentLocale->formatPrice((float)Context::getContext()->cart->getOrderTotal(true)-(float)Context::getContext()->cart->getOrderTotal(false), 'EUR'),
+                'total_with_taxes' => Context::getContext()->currentLocale->formatPrice((float)Context::getContext()->cart->getOrderTotal(true), 'EUR'),
+                'success' => true,
+                'error' => null,
+                'modal' => $this->module->renderList($this->context->cart),
+                'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
+            ]));
         }
 
+        $modal = $this->module->renderList($this->context->cart);
+        die($modal);
     }
 }

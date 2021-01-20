@@ -58,7 +58,19 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
         }
 
         if (Configuration::get('PS_BLOCK_CART_AJAX')) {
-            $this->context->controller->registerJavascript('modules-shoppingcart', 'modules/' . $this->name . '/ps_shoppingcart.js', ['position' => 'bottom', 'priority' => 150]);
+            $shipping_config = unserialize(Configuration::get('koopmanOrderExport'));
+            $shippingCarrier = (int)$shipping_config['select_carrier'];
+            $pickupCarrier = (int)$shipping_config['select_pickup_carrier'];
+            $add2orderCarrier = (int)$shipping_config['select_addedorder_carrier'];
+
+            Media::addJsDef(array(
+                'shoppingcart' => array(
+                    'shipping_carrier' => $shippingCarrier,
+                    'pickup_carrier' => $pickupCarrier,
+                    'add2order_carrier' => $add2orderCarrier
+                )
+            ));
+            $this->context->controller->registerJavascript('modules-shoppingcart', 'modules/' . $this->name . '/ps_shoppingcart.js', ['position' => 'bottom', 'priority' => 150], false);
         }
     }
 
