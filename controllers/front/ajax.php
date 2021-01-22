@@ -108,6 +108,12 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
             ]));
         }
 
+        if(Tools::getValue('action') === 'toggle_cart'){
+            $checked = Tools::getValue('checked');
+            $this->context->cookie->__set('cart_toggle', $checked);
+            die(json_encode(['cart_toggle'=>$checked]));
+        }
+
         $modal = $this->module->renderList($this->context->cart);
         die($modal);
     }
