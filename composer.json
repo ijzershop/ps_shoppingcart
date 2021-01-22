@@ -1,7 +1,7 @@
 {
   "name": "prestashop/ps_shoppingcart",
-  "description": "PrestaShop module ps_shoppingcart",
-  "homepage": "https://github.com/PrestaShop/ps_shoppingcart",
+  "description": "PrestaShop module ps_shoppingcart modyfied by de moderne smid for usage in the webshops of De Moderne Smid",
+  "homepage": "https://github.com/ijzershop/ps_shoppingcart",
   "license": "AFL-3.0",
   "authors": [
     {
