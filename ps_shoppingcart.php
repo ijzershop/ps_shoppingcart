@@ -286,7 +286,6 @@ class Ps_Shoppingcart extends Module implements WidgetInterface
         ];
     }
 
-
     public function renderList(Cart $cart)
     {
         $data = (new CartPresenter)->present($cart, true);

@@ -24,7 +24,6 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
      */
     public $ssl = true;
 
-
     /**
      * @see FrontController::initContent()
      *
@@ -43,14 +42,8 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
                 (int) Tools::getValue('id_product_attribute'),
                 (int) Tools::getValue('id_customization')
             );
-
-            ob_end_clean();
-            header('Content-Type: application/json');
-            die(json_encode([
-                'preview' => $this->module->renderWidget(null, ['cart' => $this->context->cart]),
-                'modal' => $modal,
-            ]));
         }
+
         if (Tools::getValue('action') === 'set_carrier') {
             $carrier = Tools::getValue('checked');
             $id_cart = Context::getContext()->cookie->id_cart;
