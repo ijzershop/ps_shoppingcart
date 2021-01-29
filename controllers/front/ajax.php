@@ -89,7 +89,7 @@ class Ps_ShoppingcartAjaxModuleFrontController extends ModuleFrontController
                 ]));
             }
 
-            
+
             die(json_encode([
                 'cart' => $this->context->cart,
                 'total_shipping' => Context::getContext()->currentLocale->formatPrice((float)Context::getContext()->cart->getOrderTotal(false, Cart::ONLY_SHIPPING), 'EUR'),
